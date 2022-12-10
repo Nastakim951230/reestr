@@ -18,10 +18,12 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine,
 	}
 	time_t mytime = time(NULL); //присваеваем текущее время
 	char* time_str = ctime(&mytime);//переврдим время в текст и присваеваем time_str
+	char cmd[128];
+	strcpy(cmd, time_str);
+	LPWSTR str = (LPWSTR)cmd;
 	
-	LPWSTR str = time_str;
 	DWORD strLen = wcslen(str);
-	if (RegSetValueExW(tmp, L"MyStrParam", NULL, REG_LINK, &str,strLen * sizeof(WCHAR)) == ERROR_SUCCESS)//проверяем сохранились ли данный в поле значения открытого ключа
+	if (RegSetValueExW(tmp, L"MyStrParam", NULL, REG_SZ, &str,strLen * sizeof(WCHAR)) == ERROR_SUCCESS)//проверяем сохранились ли данный в поле значения открытого ключа
 	{
 		MessageBoxA(NULL, L"Числовой параметр успешно создан и ему присвоено значение", "Информация", MB_OK);
 	}
