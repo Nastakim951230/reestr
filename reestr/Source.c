@@ -16,28 +16,24 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR pCmdLine,
 	{
 		MessageBox(NULL, L"Ключ успешно создан", L"Информация", MB_OK);
 	}
-	time_t mytime = time(NULL); //присваеваем текущее время
-	char* time_str = ctime(&mytime);//переврдим время в текст и присваеваем time_str
-	char cmd[128];
-	strcpy(cmd, time_str);
-	LPWSTR str = (LPWSTR)cmd;
-	
-	DWORD strLen = wcslen(str);
-	if (RegSetValueExW(tmp, L"MyStrParam", NULL, REG_SZ, &str,strLen * sizeof(WCHAR)) == ERROR_SUCCESS)//проверяем сохранились ли данный в поле значения открытого ключа
+	time_t  ttime = time(NULL);
+	LPSTR str = calloc(100, 1);
+	sprintf(str, "%s", asctime(localtime(&ttime)));
+	DWORD StrParamLen = wcslen(str);
+	if (RegSetValueExA(tmp, "MyStrParam", NULL, REG_SZ, str, StrParamLen * sizeof(WCHAR)) == ERROR_SUCCESS)
 	{
-		MessageBoxA(NULL, L"Числовой параметр успешно создан и ему присвоено значение", "Информация", MB_OK);
+		MessageBoxA(NULL, "Числовой параметр успешно создан и ему присвоено значение", "Информация", MB_OK);
 	}
-	LPWSTR StrValue=malloc(512);
-	DWORD DataType = 0;
-	DWORD Datalen = 512;
-	if (RegGetValueW(hKey, L"MyKey", L"MyStrParam", RRF_RT_ANY, &DataType, &StrValue, &Datalen) == ERROR_SUCCESS)
+	LPDWORD DataType = NULL;
+	LPDWORD Datalen = 512;
+	LPWSTR StrValue = malloc(512);
+	if (RegGetValueW(hKey, L"MyKey", L"MyStrParam", RRF_RT_ANY, &DataType, StrValue, &Datalen) == ERROR_SUCCESS)
 	{
-		
 		MessageBox(NULL, StrValue, L"Значение параметра", MB_OK);
 	}
 	else
 	{
-		MessageBox(NULL, L"Что-то пошло не так", L"Информация", MB_OK);
+		MessageBoxA(NULL, "Что-то пошло не так", "Информация", MB_OK);
 	}
 
 	RegCloseKey(tmp);
